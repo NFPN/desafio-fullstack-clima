@@ -396,3 +396,23 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# .NET Back-end Exclusions
+bin/
+obj/
+*.user
+*.suo
+*.sln.docstates
+
+# Angular Front-end Exclusions
+node_modules/
+dist/
+*.log
+
+# IDE-Specific Exclusions
+.vscode/
+.idea/
+
+# Miscellaneous
+*.tmp
+*.bak
