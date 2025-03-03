@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-favoritos',
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './favoritos.component.html',
-  styleUrl: './favoritos.component.css'
+  styleUrl: './favoritos.component.css',
+  standalone: true,
 })
-export class FavoritosComponent {
-
-}
+export class FavoritosComponent {}

@@ -4,8 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-previsao',
   imports: [],
   templateUrl: './previsao.component.html',
-  styleUrl: './previsao.component.css'
+  styleUrl: './previsao.component.css',
+  standalone: true,
 })
-export class PrevisaoComponent {
-
-}
+export class PrevisaoComponent {}
