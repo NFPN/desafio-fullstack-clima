@@ -4,13 +4,13 @@ namespace ProjetoClima.API.Endpoints
 {
     public static class ClimaEndpoints
     {
-        public static void MapClimaEndpoints(this IEndpointRouteBuilder routeBuilder)
+        public static void MapClimaEndpoints(this IEndpointRouteBuilder app)
         {
             var nomeClimaEndpoint = "ObterClima";
             var nomePrevisaoEndpoint = "ObterPrevisao";
 
             // Adiciona um endpoint para obter o clima de uma cidade
-            routeBuilder.MapGet("/clima/{cidade}", async (ClimaService climaService, string cidade) =>
+            app.MapGet("/clima/{cidade}", async (ClimaService climaService, string cidade) =>
             {
                 try
                 {
@@ -23,7 +23,7 @@ namespace ProjetoClima.API.Endpoints
             }).WithName(nomeClimaEndpoint);
 
             // Adiciona um endpoint para obter a previsão do tempo de uma cidade
-            routeBuilder.MapGet("/previsao/{cidade}", async (ClimaService climaService, string cidade) =>
+            app.MapGet("/previsao/{cidade}", async (ClimaService climaService, string cidade) =>
             {
                 try
                 {

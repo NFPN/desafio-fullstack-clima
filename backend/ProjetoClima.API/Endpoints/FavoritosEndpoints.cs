@@ -1,12 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProjetoClima.API.Data;
 using ProjetoClima.API.Models;
+using System.Security.Claims;
 
 namespace ProjetoClima.API.Endpoints
 {
     public static class FavoritosEndpoints
     {
-        public static void MapFavoritosEndpoints(this IEndpointRouteBuilder routeBuilder)
+        public static void MapFavoritosEndpoints(this IEndpointRouteBuilder app)
         {
             var nomeFavoritosEndpoint = "ObterFavoritos";
             var nomeFavoritoEndpoint = "ObterFavorito";
@@ -14,67 +16,86 @@ namespace ProjetoClima.API.Endpoints
             var nomeRemoverFavoritoEndpoint = "RemoverFavorito";
 
             // Adiciona um endpoint para obter todos os favoritos de um usuário
-            routeBuilder.MapGet("/favoritos/{idUsuario}", async (CidadesFavoritasContext context, string idUsuario) =>
+            app.MapGet("/favoritos", async (HttpContext context, [FromServices] ProjetoDbContext projetoContext) =>
             {
                 try
                 {
-                    var favoritos = await context.CidadesFavoritas.Where(f => f.IdUsuario == idUsuario).ToListAsync();
+                    var idUsuario = ObterUsuarioDoToken(context);
+
+                    var favoritos = await projetoContext.CidadesFavoritas.Where(f => f.IdUsuario == idUsuario).ToListAsync();
                     return Results.Ok(favoritos);
                 }
                 catch (Exception ex)
                 {
                     return Results.BadRequest(ex.Message);
                 }
-            }).WithName(nomeFavoritosEndpoint);
+            }).WithName(nomeFavoritosEndpoint)
+            .RequireAuthorization();
 
             // Adiciona um endpoint para obter um favorito de um usuário
-            routeBuilder.MapGet("/favorito/{idUsuario}/{nome}", async (CidadesFavoritasContext context, string idUsuario, string nome) =>
+            app.MapGet("/favorito/{nome}", async (HttpContext context, [FromServices] ProjetoDbContext projetoContext, string nome) =>
             {
                 try
                 {
-                    var favorito = await context.CidadesFavoritas.FirstOrDefaultAsync(f => f.IdUsuario == idUsuario && f.Nome == nome);
+                    var idUsuario = ObterUsuarioDoToken(context);
+
+                    if (string.IsNullOrEmpty(idUsuario))
+                        return Results.Unauthorized();
+
+                    var favorito = await projetoContext.CidadesFavoritas.FirstOrDefaultAsync(f => f.IdUsuario == idUsuario && f.NomeCidade == nome);
                     return Results.Ok(favorito);
                 }
                 catch (Exception ex)
                 {
                     return Results.BadRequest(ex.Message);
                 }
-            }).WithName(nomeFavoritoEndpoint);
+            }).WithName(nomeFavoritoEndpoint)
+            .RequireAuthorization();
 
             // Adiciona um endpoint para adicionar um favorito a um usuário
-            routeBuilder.MapPost("/favorito", async (CidadesFavoritasContext context, CidadeFavorita favorito) =>
+            app.MapPost("/favorito", async (HttpContext context, [FromServices] ProjetoDbContext projetoContext, CidadeFavorita favorito) =>
             {
                 try
                 {
-                    await context.CidadesFavoritas.AddAsync(favorito);
-                    await context.SaveChangesAsync();
+                    favorito.IdUsuario = ObterUsuarioDoToken(context);
+                    await projetoContext.CidadesFavoritas.AddAsync(favorito);
+                    await projetoContext.SaveChangesAsync();
                     return Results.Ok();
                 }
                 catch (Exception ex)
                 {
                     return Results.BadRequest(ex.Message);
                 }
-            }).WithName(nomeAdicionarFavoritoEndpoint);
+            }).WithName(nomeAdicionarFavoritoEndpoint)
+            .RequireAuthorization();
 
             // Adiciona um endpoint para remover um favorito de um usuário
-            routeBuilder.MapDelete("/favorito/{idUsuario}/{nome}", async (CidadesFavoritasContext context, string idUsuario, string nome) =>
+            app.MapDelete("/favorito/{nome}", async (HttpContext context, [FromServices] ProjetoDbContext projetoContext, string nome) =>
             {
                 try
                 {
-                    var favorito = await context.CidadesFavoritas.FirstOrDefaultAsync(f => f.IdUsuario == idUsuario && f.Nome == nome);
+                    var idUsuario = ObterUsuarioDoToken(context);
+
+                    var favorito = await projetoContext.CidadesFavoritas.FirstOrDefaultAsync(f => f.IdUsuario == idUsuario && f.NomeCidade == nome);
                     if (favorito == null)
                     {
                         return Results.NotFound();
                     }
-                    context.CidadesFavoritas.Remove(favorito);
-                    await context.SaveChangesAsync();
+                    projetoContext.CidadesFavoritas.Remove(favorito);
+                    await projetoContext.SaveChangesAsync();
                     return Results.Ok();
                 }
                 catch (Exception ex)
                 {
                     return Results.BadRequest(ex.Message);
                 }
-            }).WithName(nomeRemoverFavoritoEndpoint);
+            }).WithName(nomeRemoverFavoritoEndpoint)
+            .RequireAuthorization();
+        }
+
+        private static string ObterUsuarioDoToken(HttpContext context)
+        {
+            return context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
         }
     }
 }
