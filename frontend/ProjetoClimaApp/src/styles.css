@@ -1,1 +1,64 @@
-/* You can add global styles to this file, and also import other style files */
+.has-side-bar {
+  margin-left: 250px;
+}
+
+.sidebar {
+  background-color: #e6f0fa;
+  border-right: 1px solid #d1d9e6;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  z-index: 1000;
+}
+
+.sidebar .nav-link {
+  padding: 10px 15px;
+  border-radius: 5px;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar .nav-link:not(.active):hover {
+  background-color: #d1e0f5;
+}
+
+.sidebar .nav-link.active {
+  background-color: #cce0ff;
+  color: #0056b3;
+  font-weight: 500;
+}
+
+.btn-danger-light {
+  background-color: #ff6b6b;
+  border-color: #ff6b6b;
+  color: white;
+  border-radius: 5px;
+  transition: background-color 0.2s ease;
+}
+
+.btn-danger-light:not(:disabled):hover {
+  background-color: #ff4d4d;
+  border-color: #ff4d4d;
+  color: white;
+}
+
+.small-screen-toggle {
+  display: block;
+}
+
+.large-screen-toggle {
+  display: block;
+  opacity: 0.5;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #fff;
+  box-shadow: 0 0 10px 0 #ccc;
+}
+
+@media (min-width: 992px) {
+  .large-screen-toggle {
+    position: fixed;
+    left: 10px;
+    top: 10px;
+  }
+}

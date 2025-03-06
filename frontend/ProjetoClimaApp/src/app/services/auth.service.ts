@@ -1,20 +1,40 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { LoginModel, RegistroModel } from '../models/models';
 import { environment } from '../../environments/environment';
+import { FavoritesService } from './favorites.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private apiUrl = environment.apiUrl + '/auth';
+  private loginStatusSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
+  loginStatus$ = this.loginStatusSubject.asObservable();
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private favoritesService: FavoritesService // Injetar o FavoritesService
+  ) {}
 
   login(model: LoginModel): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, model);
+    return new Observable((observer) => {
+      this.http
+        .post<{ token: string }>(`${this.apiUrl}/login`, model)
+        .subscribe({
+          next: (response) => {
+            this.saveToken(response.token);
+            this.loginStatusSubject.next(true);
+            this.favoritesService.clearAndReloadFavorites(); // Limpa e recarrega os favoritos
+            observer.next(response);
+            observer.complete();
+          },
+          error: (err) => observer.error(err),
+        });
+    });
   }
 
   register(model: RegistroModel): Observable<any> {
@@ -35,6 +55,9 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('token');
+    localStorage.removeItem('favorites');
+    this.loginStatusSubject.next(false);
+    this.favoritesService.clearAndReloadFavorites(); // Limpa e recarrega os favoritos
     this.router.navigate(['/login']);
   }
 }

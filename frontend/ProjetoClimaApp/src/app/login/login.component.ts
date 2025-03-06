@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   ReactiveFormsModule,
   FormBuilder,
@@ -16,7 +16,7 @@ import { LoginModel } from '../models/models';
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   errorMessage: string | null = null;
 
@@ -31,12 +31,17 @@ export class LoginComponent {
     });
   }
 
+  ngOnInit(): void {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/search']);
+    }
+  }
+
   onSubmit(): void {
     if (this.loginForm.valid) {
       const loginData: LoginModel = this.loginForm.value as LoginModel;
       this.authService.login(loginData).subscribe({
-        next: (response) => {
-          this.authService.saveToken(response.token);
+        next: () => {
           this.router.navigate(['/search']);
         },
         error: () =>
