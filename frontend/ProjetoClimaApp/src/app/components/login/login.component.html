@@ -1,1 +1,32 @@
-<p>login works!</p>
+<div class="container mt-5">
+  <h2>Login ou Cadastro</h2>
+  <form>
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input
+        type="email"
+        class="form-control"
+        id="email"
+        [(ngModel)]="email"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Senha</label>
+      <input
+        type="password"
+        class="form-control"
+        id="password"
+        [(ngModel)]="password"
+        required
+      />
+    </div>
+    <button type="button" class="btn btn-primary me-2" (click)="login()">
+      Login
+    </button>
+    <button type="button" class="btn btn-secondary" (click)="registro()">
+      Cadastrar
+    </button>
+    <p class="text-danger mt-2" *ngIf="errorMessage">{{ errorMessage }}</p>
+  </form>
+</div>

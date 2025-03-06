@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FavoritosComponent } from './favoritos.component';
+import { ClimaCardComponent } from './clima-card.component';
 
-describe('FavoritosComponent', () => {
-  let component: FavoritosComponent;
-  let fixture: ComponentFixture<FavoritosComponent>;
+describe('ClimaCardComponent', () => {
+  let component: ClimaCardComponent;
+  let fixture: ComponentFixture<ClimaCardComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FavoritosComponent]
+      imports: [ClimaCardComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(FavoritosComponent);
+    fixture = TestBed.createComponent(ClimaCardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
