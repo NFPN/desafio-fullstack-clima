@@ -1,0 +1,42 @@
+<div
+  class="container d-flex justify-content-center align-items-center"
+  style="min-height: 100vh"
+>
+  <div class="card shadow-sm p-4" style="max-width: 400px; width: 100%">
+    <h2 class="card-title text-center">Login</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input
+          type="email"
+          id="email"
+          class="form-control"
+          formControlName="email"
+          placeholder="Digite seu email"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Senha</label>
+        <input
+          type="password"
+          id="password"
+          class="form-control"
+          formControlName="password"
+          placeholder="Digite sua senha"
+        />
+      </div>
+      <button
+        type="submit"
+        class="btn btn-primary w-100"
+        [disabled]="loginForm.invalid"
+      >
+        Entrar
+      </button>
+      <p *ngIf="errorMessage" class="text-danger mt-2">{{ errorMessage }}</p>
+      <p class="mt-2 text-center">
+        Não tem conta?
+        <a routerLink="/register" class="text-primary">Cadastre-se</a>
+      </p>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,100 @@
+<div class="container py-4">
+  <div class="input-group mb-3 w-50 mx-auto">
+    <input
+      type="text"
+      class="form-control"
+      [(ngModel)]="city"
+      placeholder="Digite o nome da cidade"
+      (keyup.enter)="searchWeather()"
+    />
+    <button class="btn btn-primary" (click)="searchWeather()">Buscar</button>
+  </div>
+  <p *ngIf="errorMessage" class="text-danger text-center">{{ errorMessage }}</p>
+
+  <!-- Card da cidade buscada -->
+  <div
+    *ngIf="weather"
+    class="card shadow-sm mx-auto mb-4"
+    style="max-width: 400px"
+  >
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="card-title mb-0 text-truncate" style="max-width: 70%">
+          {{ weather.name }}
+        </h3>
+        <h2 class="fs-2 mb-0">{{ weather.main.temp }}°C</h2>
+      </div>
+      <p class="card-text text-muted mb-1">
+        Umidade: {{ weather.main.humidity }}%
+      </p>
+      <p class="card-text text-muted mb-3">
+        {{ weather.weather[0].description }}
+      </p>
+      <div class="d-flex justify-content-between">
+        <button
+          class="btn btn-primary me-2"
+          [routerLink]="['/forecast', weather.name]"
+        >
+          Ver Previsão
+        </button>
+        <button class="btn btn-link p-0" (click)="toggleFavorite(weather.name)">
+          <i
+            class="bi fs-3"
+            [ngClass]="
+              isFavorite(weather.name)
+                ? 'bi-heart-fill text-danger'
+                : 'bi-heart'
+            "
+          ></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seção de cidades favoritadas -->
+  <div *ngIf="favorites.length > 0">
+    <h2>Cidades Favoritas</h2>
+    <div class="row">
+      <div *ngFor="let fav of favorites" class="col-sm-6 col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h3 class="card-title mb-0 text-truncate" style="max-width: 70%">
+                {{ fav.nomeCidade }}
+              </h3>
+              <h2 class="fs-2 mb-0" *ngIf="weatherData[fav.nomeCidade]">
+                {{ weatherData[fav.nomeCidade].main.temp }}°C
+              </h2>
+            </div>
+            <p
+              class="card-text text-muted mb-1"
+              *ngIf="weatherData[fav.nomeCidade]"
+            >
+              Umidade: {{ weatherData[fav.nomeCidade].main.humidity }}%
+            </p>
+            <p
+              class="card-text text-muted mb-3"
+              *ngIf="weatherData[fav.nomeCidade]"
+            >
+              {{ weatherData[fav.nomeCidade].weather[0].description }}
+            </p>
+            <div class="d-flex justify-content-between">
+              <button
+                class="btn btn-primary me-2"
+                [routerLink]="['/forecast', fav.nomeCidade]"
+              >
+                Ver Previsão
+              </button>
+              <button
+                class="btn btn-link p-0"
+                (click)="removeFavorite(fav.nomeCidade)"
+              >
+                <i class="bi bi-heart-fill text-danger fs-3"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

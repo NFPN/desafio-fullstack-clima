@@ -1,15 +1,20 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './components/login/login.component';
-import { ListaCidadeComponent } from './components/lista-cidade/lista-cidade.component';
-import { AuthGuard } from './guards/auth.guard';
+import { LoginComponent } from './login/login.component';
+import { RegisterComponent } from './register/register.component';
+import { WeatherSearchComponent } from './weather-search/weather-search.component';
+import { FavoritesComponent } from './favorites/favorites.component';
+import { ForecastComponent } from './forecast/forecast.component';
+import { AuthGuard } from './auth.guard';
 
-export const appRoutes: Routes = [
+export const routes: Routes = [
   { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'search', component: WeatherSearchComponent },
   {
-    path: 'lista-cidades',
-    component: ListaCidadeComponent,
+    path: 'favorites',
+    component: FavoritesComponent,
     canActivate: [AuthGuard],
   },
+  { path: 'forecast/:city', component: ForecastComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: '**', redirectTo: '/login' },
 ];

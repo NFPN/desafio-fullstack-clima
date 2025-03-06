@@ -1,0 +1,24 @@
+<div class="container py-4">
+  <h2 class="text-center mb-4">Favoritos</h2>
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+    <div *ngFor="let fav of favorites" class="col">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h3 class="card-title">{{ fav.nomeCidade }}</h3>
+          <p *ngIf="weatherData[fav.nomeCidade]" class="card-text">
+            Temperatura: {{ weatherData[fav.nomeCidade].main.temp }}°C
+          </p>
+          <p *ngIf="weatherData[fav.nomeCidade]" class="card-text">
+            {{ weatherData[fav.nomeCidade].weather[0].description }}
+          </p>
+          <button
+            class="btn btn-danger"
+            (click)="removeFavorite(fav.nomeCidade)"
+          >
+            Remover
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
