@@ -10,7 +10,7 @@ namespace ProjetoClima.API.Endpoints
             var nomePrevisaoEndpoint = "ObterPrevisao";
 
             // Adiciona um endpoint para obter o clima de uma cidade
-            app.MapGet("/clima/{cidade}", async (ClimaService climaService, string cidade) =>
+            app.MapGet("/clima/{cidade}", async (IClimaService climaService, string cidade) =>
             {
                 try
                 {
@@ -23,7 +23,7 @@ namespace ProjetoClima.API.Endpoints
             }).WithName(nomeClimaEndpoint);
 
             // Adiciona um endpoint para obter a previsão do tempo de uma cidade
-            app.MapGet("/previsao/{cidade}", async (ClimaService climaService, string cidade) =>
+            app.MapGet("/previsao/{cidade}", async (IClimaService climaService, string cidade) =>
             {
                 try
                 {

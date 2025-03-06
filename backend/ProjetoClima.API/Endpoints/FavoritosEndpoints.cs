@@ -16,7 +16,9 @@ namespace ProjetoClima.API.Endpoints
             var nomeRemoverFavoritoEndpoint = "RemoverFavorito";
 
             // Adiciona um endpoint para obter todos os favoritos de um usuário
-            app.MapGet("/favoritos", async (HttpContext context, [FromServices] ProjetoDbContext projetoContext) =>
+            app.MapGet("/favoritos", async (
+                HttpContext context,
+                [FromServices] ProjetoDbContext projetoContext) =>
             {
                 try
                 {

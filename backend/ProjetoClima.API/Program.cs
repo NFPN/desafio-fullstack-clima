@@ -8,10 +8,9 @@ using ProjetoClima.API.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddAuthorization();
 builder.Services.AddSwaggerGenWithAuth();
-
-builder.Services.AddHttpClient<IClimaService, ClimaService>(client => client.BaseAddress = new Uri(ObterApiClima()));
+builder.Services.AddAuthorization();
+builder.Services.AddMemoryCache();
 
 // Adiciona autenticação jwt
 builder.ConfigurarJwtAuthentication();
@@ -27,7 +26,9 @@ builder.Services.AddIdentityCore<Usuario>()
     .AddSignInManager<SignInManager<Usuario>>();
 
 // Adiciona os serviços
-builder.Services.AddHttpClient<ClimaService>();
+builder.Services.AddHttpClient<IClimaService, ClimaService>(client => client.BaseAddress = new Uri(ApiExtensions.WeatherApiUrl));
+builder.Services.AddScoped<IClimaService, ClimaService>();
+builder.Services.AddScoped<IFavoritoService, FavoritoService>();
 
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>
@@ -59,5 +60,3 @@ app.UseAuthorization();
 app.UseCookiePolicy();
 
 await app.RunAsync();
-
-static string ObterApiClima() => "https://api.openweathermap.org/data/2.5/";

@@ -11,26 +11,26 @@ namespace ProjetoClima.API.Services
     /// Construtor com injeção de dependência do contexto do banco de dados
     /// </remarks>
     /// <param name="context"></param>
-    public class FavoritoService(ProjetoDbContext context)
+    public class FavoritoService(ProjetoDbContext context) : IFavoritoService
     {
         /// <summary>
         /// Adiciona uma cidade favorita para um usuário
         /// </summary>
         /// <param name="cidadeFavorita"></param>
-        public async Task AdicionarFavorito(CidadeFavorita cidadeFavorita)
+        public async Task<int> AdicionarFavoritoAsync(CidadeFavorita cidadeFavorita)
         {
             context.CidadesFavoritas.Add(cidadeFavorita);
-            await context.SaveChangesAsync();
+            return await context.SaveChangesAsync();
         }
 
         /// <summary>
         /// Remove uma cidade favorita de um usuário
         /// </summary>
         /// <param name="cidadeFavorita"></param>
-        public async Task RemoverFavorito(CidadeFavorita cidadeFavorita)
+        public async Task<int> RemoverFavoritoAsync(CidadeFavorita cidadeFavorita)
         {
             context.CidadesFavoritas.Remove(cidadeFavorita);
-            await context.SaveChangesAsync();
+            return await context.SaveChangesAsync();
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace ProjetoClima.API.Services
         /// </summary>
         /// <param name="idUsuario"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<CidadeFavorita>> ObterFavoritos(string idUsuario)
+        public async Task<IEnumerable<CidadeFavorita>> ObterFavoritosAsync(string idUsuario)
         {
             return await context.CidadesFavoritas
                 .Where(c => c.IdUsuario == idUsuario)

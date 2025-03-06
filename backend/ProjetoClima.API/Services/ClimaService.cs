@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using ProjetoClima.API.Extensions;
 using ProjetoClima.API.Models;
 
 namespace ProjetoClima.API.Services
@@ -8,8 +9,8 @@ namespace ProjetoClima.API.Services
     /// </summary>
     public class ClimaService : IClimaService
     {
-        private IMemoryCache cache;
-        private readonly HttpClient client;
+        private readonly IMemoryCache cache;
+        private readonly HttpClient? client;
         private readonly string apiKey;
 
         public ClimaService(HttpClient httpClient, IMemoryCache memoryCache, IConfiguration configuration)
@@ -20,6 +21,9 @@ namespace ProjetoClima.API.Services
                 ?? configuration["OpenWeatherMap:ApiKey"]
                 ?? string.Empty;
 
+            if (string.IsNullOrEmpty(client?.BaseAddress?.ToString()) && client != null)
+                client.BaseAddress = new Uri(ApiExtensions.WeatherApiUrl);
+
             if (string.IsNullOrEmpty(apiKey))
                 throw new InvalidOperationException("API key not found");
         }
@@ -29,18 +33,23 @@ namespace ProjetoClima.API.Services
         /// </summary>
         /// <param name="cidade"></param>
         /// <returns></returns>
-        public async Task<DadosClima> ObterClimaAsync(string cidade)
+        public async Task<DadosClima> ObterClimaAsync(string cidade, string idioma = "pt_br")
         {
-            string cacheKey = $"clima_{cidade}";
+            if (client == null) throw new InvalidOperationException("HTTPClient não foi instanciado corretamente");
+
+            var cacheKey = $"clima_{cidade}";
             if (cache.TryGetValue(cacheKey, out DadosClima? dadosCache) && dadosCache != null)
                 return dadosCache;
 
-            var url = $"weather?q={cidade}&appid={apiKey}&units=metric";
+            var url = $"weather?q={cidade}&lang={idioma}&appid={apiKey}&units=metric";
             var response = await client.GetAsync(url);
-
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadFromJsonAsync<DadosClima>() ?? new();
+            var dados = await response.Content.ReadFromJsonAsync<DadosClima>() ?? new();
+
+            cache.Set(cacheKey, dados, TimeSpan.FromMinutes(10));
+
+            return dados;
         }
 
         /// <summary>
@@ -48,18 +57,24 @@ namespace ProjetoClima.API.Services
         /// </summary>
         /// <param name="cidade"></param>
         /// <returns></returns>
-        public async Task<DadosPrevisao> ObterPrevisaoAsync(string cidade)
+        public async Task<DadosPrevisao> ObterPrevisaoAsync(string cidade, string idioma = "pt_br")
         {
-            string cacheKey = $"previsao_{cidade}";
+            if (client == null) throw new InvalidOperationException("HTTPClient não foi instanciado corretamente");
+
+            var cacheKey = $"previsao_{cidade}";
             if (cache.TryGetValue(cacheKey, out DadosPrevisao? dadosCache) && dadosCache != null)
                 return dadosCache;
 
-            var url = $"forecast?q={cidade}&appid={apiKey}&units=metric";
+            var url = $"forecast?q={cidade}&lang={idioma}&appid={apiKey}&units=metric";
             var response = await client.GetAsync(url);
 
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadFromJsonAsync<DadosPrevisao>() ?? new();
+            var dados = await response.Content.ReadFromJsonAsync<DadosPrevisao>() ?? new();
+
+            cache.Set(cacheKey, dados, TimeSpan.FromMinutes(10));
+
+            return dados;
         }
     }
 }

@@ -4,8 +4,8 @@ namespace ProjetoClima.API.Services
 {
     public interface IClimaService
     {
-        Task<DadosClima> ObterClimaAsync(string cidade);
+        Task<DadosClima> ObterClimaAsync(string cidade, string idioma = "pt_br");
 
-        Task<DadosPrevisao> ObterPrevisaoAsync(string cidade);
+        Task<DadosPrevisao> ObterPrevisaoAsync(string cidade, string idioma = "pt_br");
     }
 }
