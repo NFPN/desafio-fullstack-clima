@@ -7,68 +7,181 @@ Bem-vindo ao Aplicativo de Previsão do Tempo! Este aplicativo full-stack permit
 Antes de começar, certifique-se de ter os seguintes itens instalados:
 - **Node.js** (v14 ou superior) - [Download](https://nodejs.org/)
 - **Angular CLI** (v12 ou superior) - Instale com `npm install -g @angular/cli`
-- **.NET 8 SDK** - [Download](https://dotnet.microsoft.com/download/dotnet/8.0)
-- **SQL Server** (LocalDB ou outra instância) - Disponível com o Visual Studio ou instalado separadamente
+- **.NET 8 SDK**: [Baixe aqui](https://dotnet.microsoft.com/download/dotnet/8.0)
+- **SQL Server**: LocalDB (incluído no Visual Studio) ou uma instância completa do SQL Server.
+- **Chave da API do OpenWeatherMap**: Registre-se em [OpenWeatherMap](https://openweathermap.org/) para obter uma chave gratuita.
+- **Git**: Para clonar o repositório.
+- **Visual Studio 2022** (opcional, para suporte a IDE) ou qualquer editor de código (ex.: VS Code).
 
 ## Instruções de Configuração
 
 Siga estas etapas para configurar e executar o projeto localmente.
 
 ### Back-end (.NET 8)
-1. Abra um terminal e navegue até a pasta `backend`:
-   ```bash
-   cd backend
-   ```
-2. Atualize o arquivo `appsettings.json` com sua string de conexão do SQL Server. Exemplo para LocalDB:
-   ```json
-   "ConnectionStrings": {
-     "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=WeatherDb;Trusted_Connection=True;"
-   }
-   ```
-3. Instale as dependências do .NET:
-   ```bash
-   dotnet restore
-   ```
-4. Configure o banco de dados (assumindo o uso do Entity Framework Core):
-   ```bash
-   dotnet ef database update
-   ```
-5. Inicie a API do back-end:
-   ```bash
-   dotnet run
-   ```
-   A API rodará em `http://localhost:5000` (verifique `launchSettings.json` caso a porta seja diferente).
+#### ProjetoClima.API
 
-### Front-end (Angular)
-1. Abra um novo terminal e navegue até a pasta `frontend`:
-   ```bash
-   cd frontend
-   ```
-2. Instale as dependências do Angular:
-   ```bash
-   npm install
-   ```
-3. Inicie o servidor de desenvolvimento do front-end:
-   ```bash
-   ng serve
-   ```
-   O aplicativo estará disponível em `http://localhost:4200`.
+Este é o backend de um aplicativo de previsão do tempo construído com .NET 8 usando Minimal APIs. Ele fornece autenticação de usuários via JWT, recupera dados climáticos do OpenWeatherMap e gerencia cidades favoritas armazenadas em um banco de dados SQL Server utilizando Entity Framework Core. O projeto é projetado para ser modular, seguro e escalável, com serviços que tratam a lógica de negócios e endpoints focados no manuseio de requisições e respostas HTTP.
 
-## Executando e Testando o Aplicativo
+## Funcionalidades
 
-1. Certifique-se de que a API do back-end está rodando (`http://localhost:5000`).
-2. Abra seu navegador e acesse `http://localhost:4200`.
-3. Teste o aplicativo:
-   - Pesquise a previsão do tempo de uma cidade.
-   - Adicione cidades aos seus favoritos.
-   - Visualize a previsão para os próximos 5 dias.
+- **Autenticação**: Registro (`/auth/registro`) e login (`/auth/login`) de usuários baseados em JWT.
+- **Dados Climáticos**: Endpoints públicos para clima atual (`/clima/{cidade}`) e previsão de 5 dias (`/previsao/{cidade}`) do OpenWeatherMap.
+- **Cidades Favoritas**: Endpoints protegidos para gerenciar cidades favoritas do usuário (`/favoritos`) usando autenticação JWT.
+- **Banco de Dados**: SQL Server com migrações do EF Core para gerenciamento do esquema.
+- **Desempenho**: Cache de dados climáticos com `IMemoryCache` (TTL de 10 minutos). O cache é automaticamente invalidado após esse período, garantindo que os dados sejam atualizados regularmente. Caso seja necessário um refresh manual, o cache pode ser limpo diretamente no serviço responsável pelo armazenamento.
+- **Segurança**: Tokens JWT, CORS e reforço do uso de HTTPS.
 
-## Funcionalidades do Projeto
-- **Busca por Clima**: Insira o nome de uma cidade para obter dados climáticos atuais.
-- **Favoritos**: Salve e gerencie suas cidades favoritas.
-- **Previsão de 5 Dias**: Veja previsões do tempo para os próximos cinco dias.
+---
 
-## Solução de Problemas
-- **A API não está conectando?** Verifique se o back-end está rodando e se a porta corresponde às chamadas da API do front-end.
-- **Erros no banco de dados?** Confira sua string de conexão e certifique-se de que `dotnet ef database update` foi executado com sucesso.
+## Instruções de Configuração
 
+Siga os passos abaixo para clonar e configurar o backend:
+
+### 1. Clonar o Repositório
+
+```bash
+git clone https://github.com/seuusuario/ProjetoClima.API.git
+cd ProjetoClima.API
+```
+
+### 2. Restaurar Dependências
+
+Restaurar os pacotes .NET necessários para o projeto:
+
+```bash
+dotnet restore
+```
+
+### 3. Configurar Variáveis de Ambiente
+
+A aplicação utiliza variáveis de ambiente para dados sensíveis. Crie um arquivo `.env` (opcional) ou defina essas variáveis no ambiente:
+
+- **Chave da API do OpenWeatherMap**: Necessária para obter os dados climáticos.
+
+  ```bash
+  setx OPENWEATHERMAP_API_KEY="sua-chave-da-api"
+  ```
+
+  Ou edite `appsettings.json` (não recomendado para produção):
+
+  ```json
+  "OpenWeatherMap": {
+    "ApiKey": "sua-chave-da-api"
+  }
+  ```
+
+- **Chave JWT**: Uma chave secreta para assinatura de tokens JWT (pelo menos 16 caracteres).
+
+  ```bash
+  setx JWT_KEY="sua-chave-secreta-com-pelo-menos-16-caracteres"
+  ```
+
+  Ou edite `appsettings.json`:
+
+  ```json
+  "Jwt": {
+    "Key": "sua-chave-secreta-com-pelo-menos-16-caracteres",
+    "Issuer": "ProjetoClima.API",
+    "Audience": "ProjetoClima.Frontend"
+  }
+  ```
+
+- **Conexão com o Banco de Dados** (opcional): Padrão para LocalDB. Para usar outra instância do SQL Server, defina:
+
+  ```bash
+  setx CONNECTIONSTRINGS__DEFAULTCONNECTION="Server=seu-servidor;Database=ProjetoClimaDb;User Id=seu-usuario;Password=sua-senha;"
+  ```
+  
+  Ou edite `appsettings.json`:
+
+  ```json
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=seu-servidor;Database=ProjetoClimaDb;User Id=seu-usuario;Password=sua-senha;"
+  }
+  ```
+
+### 4. Aplicar Migrações do Banco de Dados
+
+O projeto usa migrações do EF Core para criar o esquema do banco de dados. Execute:
+
+```bash
+dotnet ef database update
+```
+
+### 5. Compilar o Projeto
+
+Compile o projeto para verificar se tudo está configurado corretamente:
+
+```bash
+dotnet build
+```
+
+---
+
+## Executando a Aplicação
+
+### Executar Localmente
+
+Inicie o servidor backend:
+
+```bash
+dotnet run --project ProjetoClima.API
+```
+
+- A aplicação iniciará em `https://localhost:7018` (ou outra porta definida em `launchSettings.json`).
+- Utilize Postman ou curl para testar os endpoints.
+
+---
+
+## Testando os Endpoints
+
+### 1. Registrar um Usuário
+
+- **Endpoint**: `POST /auth/registro`
+- **Corpo** (JSON):
+  ```json
+  {
+    "email": "teste@exemplo.com",
+    "password": "SenhaForte123!"
+  }
+  ```
+
+### 2. Fazer Login
+
+- **Endpoint**: `POST /auth/login`
+- **Corpo** (JSON):
+  ```json
+  {
+    "email": "teste@exemplo.com",
+    "password": "SenhaForte123!"
+  }
+  ```
+- **Resposta**: `200 OK` com um token JWT.
+- Utilize o token gerado no login para se autenticar no Swagger. No Swagger UI, clique em "Authorize", insira o token no formato `Bearer <seu-token>` e, em seguida, teste os outros endpoints protegidos. Exemplo de token JWT:
+  ````json
+  {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
+  ``` No Swagger UI, clique em "Authorize", insira o token no formato `<seu-token>` e, em seguida, teste os outros endpoints protegidos.
+  ````
+
+---
+
+## Executando Testes Unitários
+
+O projeto inclui testes unitários para `ClimaService` e `FavoritoService` usando xUnit.
+
+### 1. Configurar o Projeto de Testes
+
+```bash
+cd ProjetoClima.API.Testes
+dotnet restore
+```
+
+### 2. Executar os Testes
+
+```bash
+dotnet test
+```
+
+---
