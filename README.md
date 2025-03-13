@@ -2,6 +2,12 @@
 
 Bem-vindo ao Aplicativo de Previsão do Tempo! Este aplicativo full-stack permite que você verifique previsões do tempo por cidade, gerencie locais favoritos e visualize previsões para 5 dias. Ele é desenvolvido com Angular no front-end e .NET 8 no back-end.
 
+## Showcase
+
+Veja o aplicativo em ação com a interface do usuário responsiva e funcionalidades de busca, favoritos e previsão detalhada:
+![showcase example](imgs/showcase.gif)
+
+
 ## Pré-requisitos
 
 Antes de começar, certifique-se de ter os seguintes itens instalados:
